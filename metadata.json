@@ -1,0 +1,5 @@
+{
+  "name": "ZedHaul Logistics MVP",
+  "description": "An industrial-grade logistics platform for connecting clients with truck owners, powered by Supabase for real-time freight bidding and management.",
+  "requestFramePermissions": []
+}
