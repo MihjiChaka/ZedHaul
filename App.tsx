@@ -1,16 +1,15 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from './supabaseClient';
-import { Job, Role } from './types';
-import { JobCard } from './components/JobCard';
-import { JobForm } from './components/JobForm';
+import { supabase } from './supabaseClient.ts';
+import { Job, Role } from './types.ts';
+import { JobCard } from './components/JobCard.tsx';
+import { JobForm } from './components/JobForm.tsx';
 
 const App: React.FC = () => {
   const [role, setRole] = useState<Role>('CLIENT');
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Persistent local ID for the session to simulate an authenticated user
   const [userId] = useState(() => {
     const saved = localStorage.getItem('zedhaul_user_id');
     if (saved) return saved;
@@ -19,7 +18,6 @@ const App: React.FC = () => {
     return newId;
   });
 
-  // Core Data Fetcher
   const fetchJobs = useCallback(async () => {
     try {
       const { data, error } = await supabase
@@ -36,28 +34,20 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Initialize and Real-time Subscription
   useEffect(() => {
     fetchJobs();
 
-    // Subscribe to both jobs and bids to keep the board live
     const channel = supabase
       .channel('zedhaul_live_updates')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'jobs' },
-        (payload) => {
-          console.log('Job change detected', payload);
-          fetchJobs();
-        }
+        () => fetchJobs()
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'bids' },
-        (payload) => {
-          console.log('Bid change detected', payload);
-          fetchJobs();
-        }
+        () => fetchJobs()
       )
       .subscribe();
 
@@ -66,7 +56,6 @@ const App: React.FC = () => {
     };
   }, [fetchJobs]);
 
-  // Handler: Create New Job
   const handleCreateJob = async (jobData: Omit<Job, 'id' | 'created_at' | 'bids'>) => {
     const { error } = await supabase
       .from('jobs')
@@ -84,7 +73,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Handler: Submit Bid
   const handleSubmitBid = async (jobId: string, price: number) => {
     const { error } = await supabase
       .from('bids')
@@ -102,7 +90,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F0F0F0] text-black">
-      {/* Heavy Industrial Header */}
       <header className="bg-black text-white p-6 border-b-[8px] border-yellow-400">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-4">
@@ -134,7 +121,6 @@ const App: React.FC = () => {
       </header>
 
       <main className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
-        {/* Control Panel */}
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-white industrial-border p-6 industrial-shadow">
             <h2 className="text-xl font-black uppercase mb-6 border-b-4 border-black pb-2 italic">
@@ -164,7 +150,6 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Manifest Board */}
         <div className="lg:col-span-8">
           <div className="flex justify-between items-end mb-6">
             <h2 className="text-3xl font-black uppercase italic tracking-tighter">Active Manifests</h2>

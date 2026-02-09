@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Job, Role } from '../types';
+import { Job, Role } from '../types.ts';
 
 interface JobCardProps {
   job: Job;

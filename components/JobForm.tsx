@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Job } from '../types';
+import { Job } from '../types.ts';
 
 interface JobFormProps {
   onSubmit: (jobData: Omit<Job, 'id' | 'created_at' | 'bids'>) => Promise<void>;
@@ -44,7 +44,7 @@ export const JobForm: React.FC<JobFormProps> = ({ onSubmit }) => {
           <input 
             required
             className={inputClass}
-            placeholder="Lusak"
+            placeholder="Lusaka"
             value={formData.pickup}
             onChange={e => setFormData({ ...formData, pickup: e.target.value })}
           />
